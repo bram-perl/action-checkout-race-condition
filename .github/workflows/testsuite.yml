@@ -1,0 +1,79 @@
+name: testsuite
+
+on:
+  push:
+    branches:
+      - "**"
+    tags-ignore:
+      - "*"
+  pull_request:
+
+permissions:
+  contents: read # to fetch code
+
+jobs:
+  checkout-v1:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Sleep 60s
+        run: |
+          sleep 60
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+      - name: git log
+        if: always()
+        run: |
+          git log --graph --oneline --decorate --all
+
+  checkout-v2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Sleep 60s
+        run: |
+          sleep 60
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+      - name: git log
+        if: always()
+        run: |
+          git log --graph --oneline --decorate --all
+
+  checkout-v3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Sleep 60s
+        run: |
+          sleep 60
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: git log
+        if: always()
+        run: |
+          git log --graph --oneline --decorate --all
+
+  manual-checkout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Sleep 60s
+        run: |
+          sleep 60
+      - name: clone repo
+        env:           
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git init
+          git remote add origin "https://$GITHUB_ACTOR:$GITHUB_TOKEN@github.com/$GITHUB_REPOSITORY"
+          git config --local gc.auto 0
+          git fetch origin --depth=1 "$GITHUB_SHA"
+          git checkout "$GITHUB_SHA"
+      - name: git log
+        if: always()
+        run: |
+          git log --graph --oneline --decorate --all
